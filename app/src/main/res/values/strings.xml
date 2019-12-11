@@ -3,4 +3,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_user_github">Image User Github</string>
+    <string name="value_user_dummy">Lorem ipsum</string>
+    <string name="logo_alert">Logo Alert</string>
+    <string name="value_dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent sagittis erat a dui egestas faucibus. Praesent sapien enim, blandit vitae cursus vitae, hendrerit eu mauris. Morbi porta et lacus eget sagittis.</string>
+    <string name="txt_btn_retry">RETRY</string>
+    <string name="value_loading_progressdialog">Loading...</string>
+    <string name="action_search">Search</string>
 </resources>
