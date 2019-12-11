@@ -3,18 +3,12 @@ package com.achmad.sun3toline.kepoingithub.ui.searchuser;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
@@ -59,42 +53,47 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
         mAdapter = new SearchUserAdapter(this);
         rvUsers.setAdapter(mAdapter);
         mViewModel = new ViewModelProvider(this).get(SearchUserViewModel.class);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.search_menu, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        mSearchView = new MySearchView(getActivity());
-        if (item != null) {
-            mSearchView = (SearchView) item.getActionView();
-            mSearchView.setBackgroundColor(getResources().getColor(R.color.icons));
-            ImageView closeBtn = mSearchView.findViewById(R.id.search_close_btn);
-            EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
-            editText.setTextColor(getResources().getColor(R.color.primary_text));
-            closeBtn.setEnabled(false);
-            closeBtn.setImageDrawable(null);
-            item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-                @Override
-                public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                    return true;
-                }
-
-                @Override
-                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                    usersResponses.clear();
-                    mAdapter.notifyDataSetChanged();
-                    return true;
-                }
-            });
-        }
-        mSearchView.setQueryHint(Html.fromHtml("<font color = #757575>" + "Search Github users" + "</font>"));
+        mSearchView = getActivity().findViewById(R.id.search_view_toolbar);
+        EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        editText.setTextColor(getResources().getColor(R.color.primary_text));
         mSearchView.setOnQueryTextListener(this);
-        mSearchView.setIconifiedByDefault(false);
-        super.onCreateOptionsMenu(menu, inflater);
+
     }
+
+//    @Override
+//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+//        super.onCreateOptionsMenu(menu, inflater);
+//        menu.clear();
+//        inflater.inflate(R.menu.search_menu, menu);
+//        MenuItem item = menu.findItem(R.id.action_search);
+//        mSearchView = new MySearchView(getActivity());
+//        if (item != null) {
+//            mSearchView = (SearchView) item.getActionView();
+//            mSearchView.setBackgroundColor(getResources().getColor(R.color.icons));
+//            ImageView closeBtn = mSearchView.findViewById(R.id.search_close_btn);
+//            EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+//            editText.setTextColor(getResources().getColor(R.color.primary_text));
+//            closeBtn.setEnabled(false);
+//            closeBtn.setImageDrawable(null);
+//            item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+//                @Override
+//                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+//                    return true;
+//                }
+//
+//                @Override
+//                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+//                    usersResponses.clear();
+//                    mAdapter.notifyDataSetChanged();
+//                    return true;
+//                }
+//            });
+//        }
+//        mSearchView.setQueryHint(Html.fromHtml("<font color = #757575>" + "Search Github users" + "</font>"));
+//        mSearchView.setOnQueryTextListener(this);
+//        mSearchView.setIconifiedByDefault(false);
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
 
     @Override
     public void onItemFragmentClicked(UsersResponse usersResponse) {
@@ -109,7 +108,7 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
     @Override
     public boolean onQueryTextSubmit(String query) {
         loadUser(query);
-        return false;
+        return true;
     }
 
 
@@ -142,9 +141,9 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
 
 
     public static class MySearchView extends SearchView {
-
         public MySearchView(Context context) {
             super(context);
+            SearchView searchView = findViewById(R.id.search_view_toolbar);
         }
 
         @Override
