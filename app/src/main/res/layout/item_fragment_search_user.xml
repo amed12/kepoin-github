@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
     android:layout_marginStart="4dp"
     android:layout_marginEnd="4dp"
-    android:layout_marginBottom="2dp"
     app:cardCornerRadius="4dp"
     app:cardElevation="4dp"
     app:cardPreventCornerOverlap="true">
@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/img_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
@@ -34,9 +34,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:text="@string/value_user_dummy"
+            android:textColor="?android:textColorPrimary"
+            app:layout_constraintBottom_toBottomOf="@+id/img_user"
             app:layout_constraintStart_toEndOf="@+id/img_user"
             app:layout_constraintTop_toTopOf="@+id/img_user" />
     </androidx.constraintlayout.widget.ConstraintLayout>

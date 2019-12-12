@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.achmad.sun3toline.kepoingithub.R;
 import com.achmad.sun3toline.kepoingithub.data.model.UsersResponse;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -26,7 +27,8 @@ import java.util.Objects;
  * A simple {@link Fragment} subclass.
  */
 public class SearchUserFragment extends Fragment implements OnClickInteraction, SearchView.OnQueryTextListener {
-    RecyclerView rvUsers;
+    private RecyclerView rvUsers;
+    private ShimmerFrameLayout mShimmerViewContainer;
     private ArrayList<UsersResponse> usersResponses = new ArrayList<>();
     private SearchUserAdapter mAdapter;
     private SearchView mSearchView;
@@ -48,6 +50,7 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         rvUsers = Objects.requireNonNull(getActivity()).findViewById(R.id.rv_search);
+        mShimmerViewContainer = getActivity().findViewById(R.id.shimmer_view_container);
         rvUsers.setHasFixedSize(true);
         rvUsers.setLayoutManager(new LinearLayoutManager(Objects.requireNonNull(getView()).getContext()));
         mAdapter = new SearchUserAdapter(this);
@@ -57,43 +60,7 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
         EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
         editText.setTextColor(getResources().getColor(R.color.primary_text));
         mSearchView.setOnQueryTextListener(this);
-
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
-//        menu.clear();
-//        inflater.inflate(R.menu.search_menu, menu);
-//        MenuItem item = menu.findItem(R.id.action_search);
-//        mSearchView = new MySearchView(getActivity());
-//        if (item != null) {
-//            mSearchView = (SearchView) item.getActionView();
-//            mSearchView.setBackgroundColor(getResources().getColor(R.color.icons));
-//            ImageView closeBtn = mSearchView.findViewById(R.id.search_close_btn);
-//            EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
-//            editText.setTextColor(getResources().getColor(R.color.primary_text));
-//            closeBtn.setEnabled(false);
-//            closeBtn.setImageDrawable(null);
-//            item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-//                @Override
-//                public boolean onMenuItemActionExpand(MenuItem menuItem) {
-//                    return true;
-//                }
-//
-//                @Override
-//                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-//                    usersResponses.clear();
-//                    mAdapter.notifyDataSetChanged();
-//                    return true;
-//                }
-//            });
-//        }
-//        mSearchView.setQueryHint(Html.fromHtml("<font color = #757575>" + "Search Github users" + "</font>"));
-//        mSearchView.setOnQueryTextListener(this);
-//        mSearchView.setIconifiedByDefault(false);
-//        super.onCreateOptionsMenu(menu, inflater);
-//    }
 
     @Override
     public void onItemFragmentClicked(UsersResponse usersResponse) {
@@ -121,6 +88,7 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
             return true;
         }
         if (mCurFilter != null && mCurFilter.equals(newFilter)) {
+
             return true;
         }
         mCurFilter = newFilter;
@@ -129,14 +97,32 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
     }
 
     private void loadUser(String textSearch) {
+        if (!TextUtils.isEmpty(textSearch)) {
+            showAnimationView();
+        } else {
+            stopAnimationView();
+        }
         mViewModel.initGithubSearch(textSearch);
         mViewModel.getUsersRepository().observe(getViewLifecycleOwner(), users -> {
-            usersResponses.clear();
-            mAdapter.notifyDataSetChanged();
-            usersResponses.addAll(users.getItems());
-            mAdapter.addItems(usersResponses);
-            mAdapter.notifyDataSetChanged();
+            if (users.getItems().size() > 0) {
+                usersResponses.addAll(users.getItems());
+                mAdapter.addItems(usersResponses);
+                mAdapter.notifyDataSetChanged();
+                stopAnimationView();
+            }
         });
+    }
+
+    private void stopAnimationView() {
+        mShimmerViewContainer.stopShimmerAnimation();
+        mShimmerViewContainer.setVisibility(View.GONE);
+    }
+
+    private void showAnimationView() {
+        mShimmerViewContainer.setVisibility(View.VISIBLE);
+        usersResponses.clear();
+        mAdapter.notifyDataSetChanged();
+        mShimmerViewContainer.startShimmerAnimation();
     }
 
 

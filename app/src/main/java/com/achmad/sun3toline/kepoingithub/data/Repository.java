@@ -1,11 +1,16 @@
 package com.achmad.sun3toline.kepoingithub.data;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.achmad.sun3toline.kepoingithub.data.model.Users;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,14 +29,18 @@ public class Repository {
         final MutableLiveData<Users> usersGithub = new MutableLiveData<>();
         usersGithubApi.getUser(searchText).enqueue(new Callback<Users>() {
             @Override
-            public void onResponse(Call<Users> call, Response<Users> response) {
-                if (response.isSuccessful()) {
-                    usersGithub.setValue(response.body());
+            public void onResponse(@NotNull Call<Users> call, @NotNull Response<Users> response) {
+                try {
+                    if (response.isSuccessful()) {
+                        usersGithub.setValue(response.body());
+                    }
+                } catch (Throwable throwable) {
+                    Log.d("errorGetData", Objects.requireNonNull(throwable.getMessage()));
                 }
             }
 
             @Override
-            public void onFailure(Call<Users> call, Throwable t) {
+            public void onFailure(@NotNull Call<Users> call, @NotNull Throwable t) {
                 usersGithub.setValue(null);
             }
         });

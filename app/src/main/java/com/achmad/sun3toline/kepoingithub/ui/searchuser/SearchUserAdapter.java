@@ -14,7 +14,6 @@ import com.achmad.sun3toline.kepoingithub.R;
 import com.achmad.sun3toline.kepoingithub.data.model.UsersResponse;
 import com.achmad.sun3toline.kepoingithub.utils.BaseViewHolder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -105,7 +104,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             tvUser.setText(users.getLogin());
             Glide.with(itemView.getContext())
                     .load(users.getAvatarUrl())
-                    .apply(new RequestOptions().override(60, 60))
                     .into(imgUser);
             final View.OnClickListener onClickListener = view -> mClickInteraction.onItemFragmentClicked(mValues.get(getAdapterPosition()));
             itemView.setOnClickListener(onClickListener);
