@@ -1,7 +1,6 @@
 package com.achmad.sun3toline.kepoingithub.ui.searchuser;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -59,6 +58,14 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
         mSearchView = getActivity().findViewById(R.id.search_view_toolbar);
         EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
         editText.setTextColor(getResources().getColor(R.color.primary_text));
+        mSearchView.setOnQueryTextFocusChangeListener((view, focused) -> {
+            if (!focused) {
+                if (TextUtils.isEmpty(editText.getText())) {
+                    usersResponses.clear();
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
         mSearchView.setOnQueryTextListener(this);
     }
 
@@ -82,13 +89,10 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
     @Override
     public boolean onQueryTextChange(String newText) {
         String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-        // Don't do anything if the filter hasn't actually changed.
-        // Prevents restarting the loader when restoring state.
         if (mCurFilter == null && newFilter == null) {
             return true;
         }
         if (mCurFilter != null && mCurFilter.equals(newFilter)) {
-
             return true;
         }
         mCurFilter = newFilter;
@@ -123,19 +127,5 @@ public class SearchUserFragment extends Fragment implements OnClickInteraction, 
         usersResponses.clear();
         mAdapter.notifyDataSetChanged();
         mShimmerViewContainer.startShimmerAnimation();
-    }
-
-
-    public static class MySearchView extends SearchView {
-        public MySearchView(Context context) {
-            super(context);
-            SearchView searchView = findViewById(R.id.search_view_toolbar);
-        }
-
-        @Override
-        public void onActionViewCollapsed() {
-            setQuery("", false);
-            super.onActionViewCollapsed();
-        }
     }
 }
