@@ -56,4 +56,5 @@ ext {
     javaxAnnotation = '1.3.1'
     butterknife = '10.2.0'
     facebookshimmer = '0.1.0@aar'
+    circleimageview = '3.0.1'
 }

@@ -45,6 +45,7 @@ dependencies {
     implementation "com.jakewharton:butterknife:$butterknife"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife"
     implementation "com.facebook.shimmer:shimmer:$facebookshimmer"
+    implementation "de.hdodenhof:circleimageview:$circleimageview"
     //Retrofit
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
@@ -52,7 +53,7 @@ dependencies {
 
     // Dependencies for Architecture Component
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-rc03"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.2.0-rc03"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0-rc03"
 
     // Dependencies for Paging
     implementation "androidx.paging:paging-runtime:$pagingVersion"

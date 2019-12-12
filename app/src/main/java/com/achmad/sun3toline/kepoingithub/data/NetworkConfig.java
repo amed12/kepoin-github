@@ -1,5 +1,7 @@
 package com.achmad.sun3toline.kepoingithub.data;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -7,14 +9,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.achmad.sun3toline.kepoingithub.utils.Constant.BASE_URL;
 
-public class NetworkConfig {
+class NetworkConfig {
     private static final OkHttpClient client;
     private static final Object lockObject = new Object();
     private static ApiService INSTANCE;
-    private static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
 
     static {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -24,7 +22,7 @@ public class NetworkConfig {
                 .build();
     }
 
-    public static ApiService getInstance() {
+    static ApiService getInstance() {
         synchronized (lockObject) {
             if (INSTANCE == null) {
                 INSTANCE = getRetrofitInstance().create(ApiService.class);
@@ -37,6 +35,7 @@ public class NetworkConfig {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(client)
                 .build();
     }

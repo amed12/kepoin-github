@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,5 +46,9 @@ public class Repository {
             }
         });
         return usersGithub;
+    }
+
+    public Observable<Users> requestUsers(String searchText) {
+        return usersGithubApi.requestUsers(searchText);
     }
 }

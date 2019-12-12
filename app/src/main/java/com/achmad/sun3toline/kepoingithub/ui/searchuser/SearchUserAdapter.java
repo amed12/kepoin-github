@@ -25,12 +25,10 @@ import static com.achmad.sun3toline.kepoingithub.utils.Constant.VIEW_TYPE_EMPTY;
 import static com.achmad.sun3toline.kepoingithub.utils.Constant.VIEW_TYPE_NORMAL;
 
 public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
-    private OnClickInteraction mClickInteraction;
     private List<UsersResponse> mValues;
     private String textError;
 
-    SearchUserAdapter(OnClickInteraction onClickInteraction) {
-        this.mClickInteraction = onClickInteraction;
+    SearchUserAdapter() {
     }
 
     void addItems(List<UsersResponse> mValues) {
@@ -49,7 +47,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             default:
                 return new EmptyViewHolder(
                         LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.item_empty, parent, false));
+                                .inflate(R.layout.item_empty, parent, false), textError);
         }
     }
 
@@ -76,11 +74,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }
     }
 
-    private String getTextError() {
-        return textError;
-    }
-
-    public void setTextError(String textError) {
+    void setTextError(String textError) {
         this.textError = textError;
     }
 
@@ -105,8 +99,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             Glide.with(itemView.getContext())
                     .load(users.getAvatarUrl())
                     .into(imgUser);
-            final View.OnClickListener onClickListener = view -> mClickInteraction.onItemFragmentClicked(mValues.get(getAdapterPosition()));
-            itemView.setOnClickListener(onClickListener);
         }
 
         @Override
@@ -129,19 +121,18 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @BindView(R.id.img_alert)
         ImageView imgAlert;
 
-        EmptyViewHolder(@NonNull View itemView) {
+        String errorMessage;
+
+        EmptyViewHolder(@NonNull View itemView, String errorMessage) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.errorMessage = errorMessage;
         }
 
         @Override
         public void onBind(int position) {
             super.onBind(position);
-            if (!TextUtils.isEmpty(getTextError())) {
-                final View.OnClickListener onClickListener = view -> mClickInteraction.onButtonRetryClicked();
-                tvErrorMessage.setText(getTextError());
-                buttonRetry.setOnClickListener(onClickListener);
-            } else {
+            if (TextUtils.isEmpty(errorMessage)) {
                 imgAlert.setVisibility(View.GONE);
                 tvErrorMessage.setVisibility(View.GONE);
                 buttonRetry.setVisibility(View.GONE);

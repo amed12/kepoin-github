@@ -8,6 +8,12 @@
     <string name="logo_alert">Logo Alert</string>
     <string name="value_dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent sagittis erat a dui egestas faucibus. Praesent sapien enim, blandit vitae cursus vitae, hendrerit eu mauris. Morbi porta et lacus eget sagittis.</string>
     <string name="txt_btn_retry">RETRY</string>
-    <string name="value_loading_progressdialog">Loading...</string>
+    <string name="value_loading_progressdialog">Loading…</string>
     <string name="action_search">Search</string>
+    <string name="value_empty">No data found</string>
+    <string name="alert_nointernet">Please check your internet connection!</string>
+    <string name="btn_snackbar_retryconnect">RETRY</string>
+    <string name="error_code_403">this API has a limit of 10 hits per minute, Please try again later!</string>
+    <string name="error_code_422">Required field on a resource has not been set, Please fill field users github !</string>
+    <string name="error_code_400">Bad Request</string>
 </resources>
