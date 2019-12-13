@@ -1,13 +1,10 @@
 package com.achmad.sun3toline.kepoingithub.utils;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class CommonUtils {
-    private static Dialog progressDialog;
-
     public CommonUtils() {
     }
 

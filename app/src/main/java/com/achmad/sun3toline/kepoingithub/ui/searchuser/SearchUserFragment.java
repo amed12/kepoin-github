@@ -26,6 +26,7 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -150,19 +151,16 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
                 stopAnimationView();
                 boolean internetConnected = CommonUtils.checkInternetConnection(Objects.requireNonNull(getActivity()).getApplicationContext());
                 if (internetConnected) {
-                    HttpException errorBody = (HttpException) apiResponse.error;
-                    switch (errorBody.code()) {
-                        case 403:
+                    if (apiResponse.error != null) {
+                        if (((HttpException) apiResponse.error).code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                            showSnackBarButton();
+                        } else if (((HttpException) apiResponse.error).code() == HttpURLConnection.HTTP_FORBIDDEN) {
                             showSnackBar(getResources().getString(R.string.error_code_403));
-                            break;
-                        case 400:
-                            showSnackBar(getResources().getString(R.string.error_code_400));
-                            break;
-                        case 422:
+                        } else if (((HttpException) apiResponse.error).code() == 422) {
                             showSnackBar(getResources().getString(R.string.error_code_422));
-                            break;
-                        default:
-                            break;
+                        } else {
+                            showSnackBar(apiResponse.error.getMessage());
+                        }
                     }
                 } else {
                     showSnackBarButton();
