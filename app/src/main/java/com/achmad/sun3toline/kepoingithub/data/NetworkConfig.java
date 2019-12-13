@@ -2,6 +2,8 @@ package com.achmad.sun3toline.kepoingithub.data;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -18,6 +20,9 @@ class NetworkConfig {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.level(HttpLoggingInterceptor.Level.BASIC);
         client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS) // write timeout
+                .readTimeout(10, TimeUnit.SECONDS)
                 .addInterceptor(logging)
                 .build();
     }

@@ -1,6 +1,5 @@
 package com.achmad.sun3toline.kepoingithub.ui.searchuser;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import com.achmad.sun3toline.kepoingithub.R;
 import com.achmad.sun3toline.kepoingithub.data.model.UsersResponse;
 import com.achmad.sun3toline.kepoingithub.utils.BaseViewHolder;
 import com.bumptech.glide.Glide;
-import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -26,7 +24,6 @@ import static com.achmad.sun3toline.kepoingithub.utils.Constant.VIEW_TYPE_NORMAL
 
 public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private List<UsersResponse> mValues;
-    private String textError;
 
     SearchUserAdapter() {
     }
@@ -47,7 +44,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             default:
                 return new EmptyViewHolder(
                         LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.item_empty, parent, false), textError);
+                                .inflate(R.layout.item_empty, parent, false));
         }
     }
 
@@ -73,11 +70,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             return 1;
         }
     }
-
-    void setTextError(String textError) {
-        this.textError = textError;
-    }
-
 
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.img_user)
@@ -112,31 +104,14 @@ public class SearchUserAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
     public class EmptyViewHolder extends BaseViewHolder {
-        @BindView(R.id.next_button)
-        MaterialButton buttonRetry;
 
-        @BindView(R.id.text_error)
-        TextView tvErrorMessage;
-
-        @BindView(R.id.img_alert)
-        ImageView imgAlert;
-
-        String errorMessage;
-
-        EmptyViewHolder(@NonNull View itemView, String errorMessage) {
+        EmptyViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-            this.errorMessage = errorMessage;
         }
 
         @Override
         public void onBind(int position) {
             super.onBind(position);
-            if (TextUtils.isEmpty(errorMessage)) {
-                imgAlert.setVisibility(View.GONE);
-                tvErrorMessage.setVisibility(View.GONE);
-                buttonRetry.setVisibility(View.GONE);
-            }
         }
 
         @Override

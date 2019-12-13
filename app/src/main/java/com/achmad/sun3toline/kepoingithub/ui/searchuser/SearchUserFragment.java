@@ -26,7 +26,9 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -104,12 +106,6 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void loadUser(String textSearch) {
-        if (!TextUtils.isEmpty(textSearch)) {
-            showAnimationView();
-        } else {
-            stopAnimationView();
-        }
-//        mViewModel.initGithubSearch(textSearch);
         mViewModel.setCurrentQueryText(textSearch);
         mViewModel.requestUsers(textSearch);
         mViewModel.getMutableLiveDataUsers().observe(getViewLifecycleOwner(), this::consumeResponse);
@@ -128,11 +124,14 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void consumeResponse(UsersApiResponse apiResponse) {
-
         switch (apiResponse.status) {
 
             case LOADING:
-                mAdapter.setTextError("");
+                if (!TextUtils.isEmpty(mViewModel.getCurrentQueryText())) {
+                    showAnimationView();
+                } else {
+                    stopAnimationView();
+                }
                 break;
 
             case SUCCESS:
@@ -143,27 +142,35 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
                     mAdapter.notifyDataSetChanged();
                 } else if (apiResponse.data.getTotalCount() == 0) {
                     showSnackBar(getResources().getString(R.string.value_empty));
-                    mAdapter.setTextError(getResources().getString(R.string.value_empty));
                 }
                 break;
 
             case ERROR:
                 stopAnimationView();
+                Throwable error = apiResponse.error;
                 boolean internetConnected = CommonUtils.checkInternetConnection(Objects.requireNonNull(getActivity()).getApplicationContext());
                 if (internetConnected) {
-                    if (apiResponse.error != null) {
-                        if (((HttpException) apiResponse.error).code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-                            showSnackBarButton();
-                        } else if (((HttpException) apiResponse.error).code() == HttpURLConnection.HTTP_FORBIDDEN) {
-                            showSnackBar(getResources().getString(R.string.error_code_403));
-                        } else if (((HttpException) apiResponse.error).code() == 422) {
-                            showSnackBar(getResources().getString(R.string.error_code_422));
-                        } else {
-                            showSnackBar(apiResponse.error.getMessage());
+                    if (error instanceof SocketTimeoutException) {
+                        showSnackBarButton(getResources().getString(R.string.alert_slow_internet)); // "Connection Timeout"
+                    } else if (error instanceof IOException) {
+                        showSnackBarButton(getResources().getString(R.string.alert_nointernet));
+                    } else {
+                        if (apiResponse.error != null) {
+                            if (((HttpException) error).code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                                showSnackBarButton(getResources().getString(R.string.alert_nointernet));
+                            } else if (((HttpException) error).code() == HttpURLConnection.HTTP_FORBIDDEN) {
+                                showSnackBar(getResources().getString(R.string.error_code_403));
+                            } else if (((HttpException) error).code() == 422) {
+                                showSnackBar(getResources().getString(R.string.error_code_422));
+                                usersResponses.clear();
+                                mAdapter.notifyDataSetChanged();
+                            } else {
+                                showSnackBar(apiResponse.error.getMessage());
+                            }
                         }
                     }
                 } else {
-                    showSnackBarButton();
+                    showSnackBarButton(getResources().getString(R.string.alert_nointernet));
                 }
                 break;
 
@@ -178,8 +185,8 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
         snackbar.show();
     }
 
-    private void showSnackBarButton() {
-        Snackbar snackbar = Snackbar.make(relativeLayout, getResources().getString(R.string.alert_nointernet), Snackbar.LENGTH_LONG)
+    private void showSnackBarButton(String message) {
+        Snackbar snackbar = Snackbar.make(relativeLayout, message, Snackbar.LENGTH_LONG)
                 .setActionTextColor(Color.RED)
                 .setAction(getResources().getString(R.string.btn_snackbar_retryconnect), view -> loadUser(mViewModel.getCurrentQueryText()))
                 .setDuration(30000);

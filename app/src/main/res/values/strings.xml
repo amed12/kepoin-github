@@ -16,4 +16,5 @@
     <string name="error_code_403">this API has a limit of 10 hits per minute, Please try again later!</string>
     <string name="error_code_422">Required field on a resource has not been set, Please fill field users github !</string>
     <string name="error_code_400">Bad Request</string>
+    <string name="alert_slow_internet">Slow internet connection detected, Please try again!</string>
 </resources>
