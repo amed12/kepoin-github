@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.achmad.sun3toline.kepoingithub.utils.Constant.BASE_URL;
 
-class NetworkConfig {
+public class NetworkConfig {
     private static final OkHttpClient client;
     private static final Object lockObject = new Object();
     private static ApiService INSTANCE;
@@ -27,7 +27,7 @@ class NetworkConfig {
                 .build();
     }
 
-    static ApiService getInstance() {
+    public static ApiService getInstance() {
         synchronized (lockObject) {
             if (INSTANCE == null) {
                 INSTANCE = getRetrofitInstance().create(ApiService.class);

@@ -1,5 +1,9 @@
 package com.achmad.sun3toline.kepoingithub.data.model;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.google.gson.annotations.SerializedName;
 
 import javax.annotation.Generated;
@@ -63,6 +67,18 @@ public class UsersResponse {
 
     @SerializedName("organizations_url")
     private String organizationsUrl;
+
+    public static DiffUtil.ItemCallback<UsersResponse> DIFF_CALLBACK = new DiffUtil.ItemCallback<UsersResponse>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull UsersResponse oldItem, @NonNull UsersResponse newItem) {
+            return oldItem.login.equals(newItem.login);
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull UsersResponse oldItem, @NonNull UsersResponse newItem) {
+            return oldItem.login.equals(newItem.login);
+        }
+    };
 
     public String getGistsUrl() {
         return gistsUrl;
@@ -216,6 +232,7 @@ public class UsersResponse {
         this.organizationsUrl = organizationsUrl;
     }
 
+
     @Override
     public String toString() {
         return
@@ -240,5 +257,20 @@ public class UsersResponse {
                         ",node_id = '" + nodeId + '\'' +
                         ",organizations_url = '" + organizationsUrl + '\'' +
                         "}";
+    }
+
+    public UsersResponse(String login, String avatarUrl, int id) {
+        this.login = login;
+        this.avatarUrl = avatarUrl;
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == this)
+            return true;
+
+        UsersResponse usersResponse = (UsersResponse) obj;
+        return usersResponse.login.equals(this.login);
     }
 }

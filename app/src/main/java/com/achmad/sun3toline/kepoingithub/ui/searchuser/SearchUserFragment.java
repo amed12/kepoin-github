@@ -19,21 +19,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.achmad.sun3toline.kepoingithub.R;
-import com.achmad.sun3toline.kepoingithub.data.UsersApiResponse;
-import com.achmad.sun3toline.kepoingithub.data.model.UsersResponse;
+import com.achmad.sun3toline.kepoingithub.data.model.StatusHandling;
 import com.achmad.sun3toline.kepoingithub.utils.CommonUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
-import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.HttpException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,10 +45,9 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
     RelativeLayout relativeLayout;
     @BindView(R.id.search_view_toolbar)
     SearchView mSearchView;
-    private ArrayList<UsersResponse> usersResponses = new ArrayList<>();
-    private SearchUserAdapter mAdapter;
     private SearchUserViewModel mViewModel;
     private String mCurFilter;
+    private ItemSearchAdapter adapter;
 
     public SearchUserFragment() {
         // Required empty public constructor
@@ -69,16 +66,14 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
         ButterKnife.bind(this, Objects.requireNonNull(getActivity()));
         rvUsers.setHasFixedSize(true);
         rvUsers.setLayoutManager(new LinearLayoutManager(Objects.requireNonNull(getView()).getContext()));
-        mAdapter = new SearchUserAdapter();
-        rvUsers.setAdapter(mAdapter);
+        adapter = new ItemSearchAdapter();
         mViewModel = new ViewModelProvider(this).get(SearchUserViewModel.class);
         EditText editText = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
         editText.setTextColor(getResources().getColor(R.color.primary_text));
         mSearchView.setOnQueryTextFocusChangeListener((view, focused) -> {
             if (!focused) {
                 if (TextUtils.isEmpty(editText.getText())) {
-                    usersResponses.clear();
-                    mAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -107,8 +102,11 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
 
     private void loadUser(String textSearch) {
         mViewModel.setCurrentQueryText(textSearch);
-        mViewModel.requestUsers(textSearch);
-        mViewModel.getMutableLiveDataUsers().observe(getViewLifecycleOwner(), this::consumeResponse);
+        mViewModel.initializePaging(textSearch);
+        mViewModel.getListLiveData().observe(getViewLifecycleOwner(), pagedList -> adapter.submitList(pagedList)
+        );
+        mViewModel.getStatusHandlingLiveData().observe(getViewLifecycleOwner(), this::consumeResponseStatus);
+        rvUsers.setAdapter(adapter);
     }
 
     private void stopAnimationView() {
@@ -118,12 +116,11 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
 
     private void showAnimationView() {
         mShimmerViewContainer.setVisibility(View.VISIBLE);
-        usersResponses.clear();
-        mAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
         mShimmerViewContainer.startShimmerAnimation();
     }
 
-    private void consumeResponse(UsersApiResponse apiResponse) {
+    private void consumeResponseStatus(StatusHandling apiResponse) {
         switch (apiResponse.status) {
 
             case LOADING:
@@ -133,18 +130,12 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
                     stopAnimationView();
                 }
                 break;
-
             case SUCCESS:
                 stopAnimationView();
-                if (apiResponse.data.getTotalCount() != 0) {
-                    usersResponses.addAll(apiResponse.data.getItems());
-                    mAdapter.addItems(usersResponses);
-                    mAdapter.notifyDataSetChanged();
-                } else if (apiResponse.data.getTotalCount() == 0) {
+                if (Objects.requireNonNull(adapter.getCurrentList()).size() == 0) {
                     showSnackBar(getResources().getString(R.string.value_empty));
                 }
                 break;
-
             case ERROR:
                 stopAnimationView();
                 Throwable error = apiResponse.error;
@@ -154,26 +145,23 @@ public class SearchUserFragment extends Fragment implements SearchView.OnQueryTe
                         showSnackBarButton(getResources().getString(R.string.alert_slow_internet)); // "Connection Timeout"
                     } else if (error instanceof IOException) {
                         showSnackBarButton(getResources().getString(R.string.alert_nointernet));
-                    } else {
-                        if (apiResponse.error != null) {
-                            if (((HttpException) error).code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-                                showSnackBarButton(getResources().getString(R.string.alert_nointernet));
-                            } else if (((HttpException) error).code() == HttpURLConnection.HTTP_FORBIDDEN) {
-                                showSnackBar(getResources().getString(R.string.error_code_403));
-                            } else if (((HttpException) error).code() == 422) {
-                                showSnackBar(getResources().getString(R.string.error_code_422));
-                                usersResponses.clear();
-                                mAdapter.notifyDataSetChanged();
-                            } else {
-                                showSnackBar(apiResponse.error.getMessage());
-                            }
+                    } else
+//                        if (error != null)
+                    {
+                        if (((HttpException) error).code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                            showSnackBarButton(getResources().getString(R.string.alert_nointernet));
+                        } else if (((HttpException) error).code() == HttpURLConnection.HTTP_FORBIDDEN) {
+                            showSnackBar(getResources().getString(R.string.error_code_403));
+                        } else if (((HttpException) error).code() == 422) {
+                            showSnackBar(getResources().getString(R.string.error_code_422));
+                        } else {
+                            showSnackBar(apiResponse.error.getMessage());
                         }
                     }
                 } else {
                     showSnackBarButton(getResources().getString(R.string.alert_nointernet));
                 }
                 break;
-
             default:
                 break;
         }

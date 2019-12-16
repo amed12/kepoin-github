@@ -13,4 +13,9 @@ public class Repository {
     public Observable<Users> requestUsers(String searchText) {
         return usersGithubApi.requestUsers(searchText);
     }
+
+//    public Observable<Users> requestUsersGithub(String searchText, int page) {
+//        return usersGithubApi.requestUsersGithub(searchText,page);
+//    }
+
 }

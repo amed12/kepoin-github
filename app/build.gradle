@@ -54,6 +54,7 @@ dependencies {
     // Dependencies for Architecture Component
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-rc03"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0-rc03"
+    implementation 'android.arch.paging:runtime:1.0.1'
 
     // Dependencies for Glide
     implementation("com.github.bumptech.glide:glide:$glideVersion") {
