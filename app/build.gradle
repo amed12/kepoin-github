@@ -62,11 +62,6 @@ dependencies {
     }
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
 
-    /*RxJava lib*/
-    implementation "io.reactivex.rxjava2:rxandroid:$rxJava2android"
-    implementation "io.reactivex.rxjava2:rxjava:$rxJava2"
-    implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:$rxJava2adapter"
-
     // Dependencies for local unit tests
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
